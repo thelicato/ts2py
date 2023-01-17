@@ -1,9 +1,3 @@
-from importlib import metadata
-
 __title__ = "ts2py"
+__version__ = "0.0.1"
 __description__ = "Python-Interoperability for Typescript-Interfaces"
-
-try:
-    __version__ = f"v{metadata.version(__package__)}"
-except:
-    __version__ = ""
