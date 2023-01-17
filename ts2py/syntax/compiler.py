@@ -19,7 +19,7 @@ def source_hash(source_text: str) -> str:
         with open(__file__, "r", encoding="utf-8") as current_file:
             script_hash = md5(current_file.read())
     except (FileNotFoundError, IOError):
-        script_hash = "source of ts2pythonParser.py not found!?"
+        script_hash = "source of ts2pyParser.py not found!?"
     return " ".join([md5(source_text), script_hash])
 
 
@@ -66,12 +66,12 @@ TYPE_NAME_SUBSTITUTION = {
 }
 
 
-class TS2PythonCompiler(Compiler):
-    """Compiler for the abstract-syntax-tree of a ts2python source file."""
+class ts2pyCompiler(Compiler):
+    """Compiler for the abstract-syntax-tree of a ts2py source file."""
 
     def reset(self):
         super().reset()
-        bcn = get_config_value("ts2python.BaseClassName", "TypedDict")
+        bcn = get_config_value("ts2py.BaseClassName", "TypedDict")
         i = bcn.rfind(".")
         if i >= 0:
             self.additional_imports = f"\nfrom {bcn[:i]} import {bcn[i + 1:]}\n"
@@ -79,15 +79,15 @@ class TS2PythonCompiler(Compiler):
         else:
             self.additional_imports = ""
         self.base_class_name = bcn
-        self.class_decorator = get_config_value("ts2python.ClassDecorator", "").strip()
+        self.class_decorator = get_config_value("ts2py.ClassDecorator", "").strip()
         if self.class_decorator:
             if self.class_decorator[0] != "@":
                 self.class_decorator = "@" + self.class_decorator
             self.class_decorator += "\n"
-        self.use_enums = get_config_value("ts2python.UseEnum", True)
-        self.use_type_union = get_config_value("ts2python.UseTypeUnion", False)
-        self.use_literal_type = get_config_value("ts2python.UseLiteralType", True)
-        self.use_not_required = get_config_value("ts2python.UseNotRequired", False)
+        self.use_enums = get_config_value("ts2py.UseEnum", True)
+        self.use_type_union = get_config_value("ts2py.UseTypeUnion", False)
+        self.use_literal_type = get_config_value("ts2py.UseLiteralType", True)
+        self.use_not_required = get_config_value("ts2py.UseNotRequired", False)
 
         self.overloaded_type_names: Set[str] = set()
         self.known_types: List[Set[str]] = [
@@ -743,8 +743,8 @@ class TS2PythonCompiler(Compiler):
         return identifier
 
 
-get_compiler = ThreadLocalSingletonFactory(TS2PythonCompiler, ident="1")
+get_compiler = ThreadLocalSingletonFactory(ts2pyCompiler, ident="1")
 
 
-def compile_ts2python(ast):
+def compile_ts2py(ast):
     return get_compiler()(ast)

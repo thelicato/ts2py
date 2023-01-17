@@ -1,5 +1,5 @@
 from datetime import datetime
-from ts2python.utils.config import SUCCESS_C, ERROR_C, END_C
+from ts2py.utils.config import SUCCESS_C, ERROR_C, END_C
 
 
 def info(msg: str) -> None:

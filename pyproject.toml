@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "ts2python"
+name = "ts2py"
 version = "0.6.5"
 description = "Python-Interoperability for Typescript-Interfaces"
 
 license = "Apache-2.0"
 
-authors = ["Eckhart Arnold <eckhart.arnold@posteo.de>"]
+authors = ["Eckhart Arnold <eckhart.arnold@posteo.de>", "Angelo Delicato <thelicato@duck.com>"]
 
 readme = "README.md"
-repository = "https://github.com/jecki/ts2python"
-homepage = "https://github.com/jecki/ts2python"
+repository = "https://github.com/thelicato/ts2py"
+homepage = "https://github.com/thelicato/ts2py"
 
 keywords = [
     'Typescript to Python converter',
@@ -34,7 +34,7 @@ classifiers = [
 ]
 
 packages = [
-    { include = "ts2python" }
+    { include = "ts2py" }
 ]
 
 
@@ -54,7 +54,7 @@ missing-class-docstring
 [tool.black]
 line-length = 88
 target-version = ['py37', 'py38']
-include = 'ts2python/.*\.pyi?'
+include = 'ts2py/.*\.pyi?'
 extend-exclude = '''
 /(
   # The following are specific to Black, you probably don't want those.
@@ -65,7 +65,7 @@ extend-exclude = '''
 '''
 
 [tool.poetry.scripts]
-ts2python = 'ts2python.main:main'
+ts2py = 'ts2py.main:main'
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^2.15.10"

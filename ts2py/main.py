@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
-"""ts2python.py - compiles typescript dataclasses to Python
+"""ts2py - compiles typescript dataclasses to Python
         TypedDicts <https://www.python.org/dev/peps/pep-0589/>
 
-Copyright 2021  by Eckhart Arnold (arnold@badw.de)
+Copyright 2023  by
+                Eckhart Arnold (arnold@badw.de)
                 Bavarian Academy of Sciences and Humanities (badw.de)
+
+                Angelo Delicato (thelicato@duck.com)
+
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -38,9 +42,9 @@ from DHParser import (
     get_config_values,
     StringView,
 )
-from ts2python.utils.config import GRAMMAR_FILE, INI_FILE
-from ts2python.utils import logger
-from ts2python.syntax import preprocessor, ast, parser, compiler
+from ts2py.utils.config import GRAMMAR_FILE, INI_FILE
+from ts2py.utils import logger
+from ts2py.syntax import preprocessor, ast, parser, compiler
 
 
 def compile_src(source: str) -> Tuple[Any, List[Error]]:
@@ -105,7 +109,7 @@ def main():
     from argparse import ArgumentParser
 
     parser = ArgumentParser(
-        description="Parses a ts2python-file and shows its syntax-tree."
+        description="Parses a ts2py-file and shows its syntax-tree."
     )
     parser.add_argument("files", nargs="+")
     parser.add_argument(
@@ -183,11 +187,11 @@ def main():
         if args.compatibility:
             version_info = tuple(int(part) for part in args.compatibility[0].split("."))
             if version_info >= (3, 10):
-                set_preset_value("ts2python.UseTypeUnion", True, allow_new_key=True)
+                set_preset_value("ts2py.UseTypeUnion", True, allow_new_key=True)
         if args.base:
-            set_preset_value("ts2python.BaseClassName", args.base[0].strip())
+            set_preset_value("ts2py.BaseClassName", args.base[0].strip())
         if args.decorator:
-            set_preset_value("ts2python.ClassDecorator", args.decorator[0].strip())
+            set_preset_value("ts2py.ClassDecorator", args.decorator[0].strip())
         if args.peps:
             args_peps = [pep.strip() for pep in args.peps]
             all_peps = {"435", "584", "604", "655", "~435", "~584", "~604", "~655"}
@@ -204,15 +208,15 @@ def main():
             for pep in args_peps:
                 kwargs = {"value": pep[0] != "~", "allow_new_key": True}
                 if pep == "435":
-                    set_preset_value("ts2python.UseEnum", **kwargs)
+                    set_preset_value("ts2py.UseEnum", **kwargs)
                 if pep == "584":
-                    set_preset_value("ts2python.UseLiteralType", **kwargs)
+                    set_preset_value("ts2py.UseLiteralType", **kwargs)
                 if pep == "604":
-                    set_preset_value("ts2python.TypeUnion", **kwargs)
+                    set_preset_value("ts2py.TypeUnion", **kwargs)
                 if pep == "655":
-                    set_preset_value("ts2python.UseNotRequired", **kwargs)
+                    set_preset_value("ts2py.UseNotRequired", **kwargs)
         finalize_presets()
-        _ = get_config_values("ts2python.*")  # fill config value cache
+        _ = get_config_values("ts2py.*")  # fill config value cache
 
     start_logging(log_dir)
 
