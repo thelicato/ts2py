@@ -34,19 +34,14 @@ classifiers = [
 ]
 
 packages = [
-    { include = "ts2python.ebnf" },
-    { include = "ts2python" },
-    { include = "demo" },
-    { include = "tests_grammar", format = "sdist" },
-    { include = "tests", format = "sdist" },
-    { include = "docs", format = "sdist" }
+    { include = "ts2python" }
 ]
 
 
 [tool.poetry.dependencies]
 python = "^3.10"
-DHParser = { version = "~1.2", optional = false }
-typing_extensions = { version = "^4.0", optional = true }
+dhparser = "^1.3.3"
+typing-extensions = "^4.4.0"
 
 [tool.pylint."MESSAGES CONTROL"]
 confidence = ''
