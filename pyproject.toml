@@ -37,6 +37,7 @@ classifiers = [
 
 packages = [
     { include = "ts2pythonParser.py" },
+    { include = "ts2python.ebnf" },
     { include = "ts2python" },
     { include = "demo" },
     { include = "tests_grammar", format = "sdist" },
