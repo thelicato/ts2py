@@ -29,7 +29,6 @@ import typer
 from DHParser import (
     compile_source,
     set_config_value,
-    access_presets,
     finalize_presets,
     Error,
     canonical_error_strings,
@@ -37,12 +36,8 @@ from DHParser import (
     FATAL,
     set_preset_value,
     StringView,
-)
-from DHParser.configuration import (
     read_local_config,
     access_presets,
-    set_preset_value,
-    finalize_presets,
 )
 from ts2py.syntax import preprocessor, ast, parser, compiler
 from ts2py import __version__, types
@@ -78,7 +73,7 @@ def serialize_result(result: Any) -> str:
     return repr(result)
 
 
-def process_file(source: str, target: str) -> str:
+def process_file(source: str, target: str) -> None:
     """
     Compiles the source and writes the serialized results back to disk,
     unless any fatal errors have occurred. Error and Warning messages are
@@ -92,8 +87,6 @@ def process_file(source: str, target: str) -> str:
             results_file.write(serialize_result(result))
     if errors:
         Logger().error("\n".join(canonical_error_strings(errors)))
-    return ""
-    return ""
 
 
 @app.command()
@@ -131,13 +124,13 @@ def convert(
     # Set PEPS
     for pep in peps:
         kwargs = {"value": True, "allow_new_key": True}
-        if pep == types.args.PepArg.pep435:
+        if pep == types.args.PepArg.PEP435:
             set_preset_value("ts2py.UseEnum", **kwargs)
-        if pep == types.args.PepArg.pep584:
+        if pep == types.args.PepArg.PEP584:
             set_preset_value("ts2py.UseLiteralType", **kwargs)
-        if pep == types.args.PepArg.pep604:
+        if pep == types.args.PepArg.PEP604:
             set_preset_value("ts2py.TypeUnion", **kwargs)
-        if pep == types.args.PepArg.pep655:
+        if pep == types.args.PepArg.PEP655:
             set_preset_value("ts2py.UseNotRequired", **kwargs)
     # Set compatibility
     if helper.use_type_union(compatibility):

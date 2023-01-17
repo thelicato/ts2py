@@ -26,7 +26,7 @@ from DHParser import (
 )
 
 
-class ts2pyGrammar(Grammar):
+class TS2PyGrammar(Grammar):
     r"""Parser for a ts2py source file."""
     arg_list = Forward()
     declaration = Forward()
@@ -472,10 +472,10 @@ class ts2pyGrammar(Grammar):
     root__ = TreeReduction(_root, CombinedParser.MERGE_TREETOPS)
 
 
-_raw_grammar = ThreadLocalSingletonFactory(ts2pyGrammar)
+_raw_grammar = ThreadLocalSingletonFactory(TS2PyGrammar)
 
 
-def get_grammar() -> ts2pyGrammar:
+def get_grammar() -> TS2PyGrammar:
     grammar = _raw_grammar()
     if get_config_value("resume_notices"):
         resume_notices_on(grammar)

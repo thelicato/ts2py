@@ -66,7 +66,7 @@ TYPE_NAME_SUBSTITUTION = {
 }
 
 
-class ts2pyCompiler(Compiler):
+class TS2PyCompiler(Compiler):
     """Compiler for the abstract-syntax-tree of a ts2py source file."""
 
     def reset(self):
@@ -743,7 +743,7 @@ class ts2pyCompiler(Compiler):
         return identifier
 
 
-get_compiler = ThreadLocalSingletonFactory(ts2pyCompiler, ident="1")
+get_compiler = ThreadLocalSingletonFactory(TS2PyCompiler, ident="1")
 
 
 def compile_ts2py(ast):

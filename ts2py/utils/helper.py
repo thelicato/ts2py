@@ -11,10 +11,10 @@ def banner(version: str):
         f"""
     ████████╗███████╗██████╗ ██████╗ ██╗   ██╗
     ╚══██╔══╝██╔════╝╚════██╗██╔══██╗╚██╗ ██╔╝
-       ██║   ███████╗ █████╔╝██████╔╝ ╚████╔╝ 
-       ██║   ╚════██║██╔═══╝ ██╔═══╝   ╚██╔╝  
-       ██║   ███████║███████╗██║        ██║   
-       ╚═╝   ╚══════╝╚══════╝╚═╝        ╚═╝   
+       ██║   ███████╗ █████╔╝██████╔╝ ╚████╔╝
+       ██║   ╚════██║██╔═══╝ ██╔═══╝   ╚██╔╝
+       ██║   ███████║███████╗██║        ██║
+       ╚═╝   ╚══════╝╚══════╝╚═╝        ╚═╝
     ts2py {version}
     """
     )
@@ -22,7 +22,7 @@ def banner(version: str):
 
 def check_path(path: str) -> None:
     if not os.path.exists(path):
-        Logger().error(f"Defined path does not exist")
+        Logger().error("Defined path does not exist")
         sys.exit(1)
 
 
@@ -34,8 +34,8 @@ def check_grammar_file() -> None:
 
 def use_type_union(compatibility: types.args.PythonCompatibilityArg) -> bool:
     use_type_union_list = [
-        types.args.PythonCompatibilityArg.python310,
-        types.args.PythonCompatibilityArg.python311,
+        types.args.PythonCompatibilityArg.PYTHON310,
+        types.args.PythonCompatibilityArg.PYTHON311,
     ]
     return True if compatibility in use_type_union_list else False
 
