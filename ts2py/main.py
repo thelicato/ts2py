@@ -20,7 +20,7 @@ permissions and limitations under the License.
 """
 
 import os
-from typing import List, Tuple, Any
+from typing import List, Tuple, Optional, Any
 import typer
 from DHParser import (
     compile_source,
@@ -76,6 +76,7 @@ def process_file(source: str, target: str) -> None:
     returned in the terminal output.
     """
     if os.path.isfile(target):
+        Logger().info(f"Target file '{target}' already exists, deleting it...")
         os.remove(target)
     result, errors = compile_src(source)
     if not has_errors(errors, FATAL):
@@ -83,6 +84,8 @@ def process_file(source: str, target: str) -> None:
             results_file.write(serialize_result(result))
     if errors:
         Logger().error("\n".join(canonical_error_strings(errors)))
+    else:
+        Logger().success(f"Conversion for file '{source}' completed succesfully")
 
 
 @app.command()
@@ -100,10 +103,10 @@ def convert(
         False, "--verbose", "-v", help="Enable verbose output"
     ),
     peps: List[types.args.PepArg] = typer.Option(
-        ["655"], "--peps", "-p", help="Assume Python-PEPs, e.g. 655"
+        ["655"], "--pep", "-p", help="Assume Python-PEPs, e.g. 655"
     ),
-    decorator: str = typer.Option(
-        "", "--decorator", "-d", help="Add the given decorator"
+    decorator: Optional[str] = typer.Option(
+        None, "--decorator", help="Add the given decorator"
     ),
     debug: bool = typer.Option(False, "--debug", "-d", help="Enable debug mode"),
 ):
@@ -132,7 +135,7 @@ def convert(
     if helper.use_type_union(compatibility):
         set_preset_value("ts2py.UseTypeUnion", True, allow_new_key=True)
     # Set decorator
-    if len(decorator) > 0:
+    if decorator:
         set_preset_value("ts2py.ClassDecorator", decorator)
     # Set debug mode
     if debug:
