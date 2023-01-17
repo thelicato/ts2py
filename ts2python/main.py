@@ -30,7 +30,8 @@ from functools import partial, lru_cache
 import os
 import sys
 from typing import Tuple, List, Union, Any, Callable, Set, Dict, Sequence
-
+from ts2python.utils.config import GRAMMAR_FILE
+import ts2python.utils.logger as logger
 
 try:
     scriptpath = os.path.dirname(__file__)
@@ -1658,38 +1659,9 @@ def inspect(test_file_path: str):
 
 
 def main():
-    # recompile grammar if needed
-    script_path = os.path.abspath(__file__)
-    script_name = os.path.basename(script_path)
-    if script_name.endswith("Parser.py"):
-        base_path = script_path[:-9]
-    else:
-        base_path = os.path.splitext(script_path)[0]
-    grammar_path = base_path + ".ebnf"
-    parser_update = False
-
-    def notify():
-        global parser_update
-        parser_update = True
-        print("recompiling " + grammar_path)
-
-    if os.path.exists(grammar_path) and os.path.isfile(grammar_path):
-        if not recompile_grammar(grammar_path, script_path, force=False, notify=notify):
-            error_file = base_path + "_ebnf_ERRORS.txt"
-            with open(error_file, encoding="utf-8") as f:
-                print(f.read())
-            sys.exit(1)
-        elif parser_update:
-            print(
-                os.path.basename(__file__) + " has changed. "
-                "Please run again in order to apply updated compiler"
-            )
-            sys.exit(0)
-    else:
-        print(
-            "Could not check whether grammar requires recompiling, "
-            "because grammar was not found at: " + grammar_path
-        )
+    if not os.path.exists(GRAMMAR_FILE) or not os.path.isfile(GRAMMAR_FILE):
+        logger.error(f"Grammar was not found at: {GRAMMAR_FILE}")
+        sys.exit(1)
 
     from argparse import ArgumentParser
 

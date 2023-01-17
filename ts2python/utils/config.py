@@ -3,9 +3,7 @@ import os
 GRAMMAR_FILE = (
     f"{os.path.dirname(os.path.abspath(__package__))}/ts2python/assets/ts2python.ebnf"
 )
-GRAMMAR_FILE = (
-    f"{os.path.dirname(os.path.abspath(__package__))}/ts2python/assets/ts2python.ini"
-)
+INI_FILE = f"{os.path.dirname(os.path.abspath(__package__))}/ts2python/assets/ts2pythonParser.ini"
 
 # Colors
 SUCCESS_C = "\033[92m"
