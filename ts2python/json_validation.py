@@ -19,17 +19,9 @@ permissions and limitations under the License.
 """
 
 
-from enum import Enum, IntEnum
+from enum import Enum
 import functools
-import sys
-from typing import Union, List, Tuple, Optional, Dict, Any, \
-    Generic, TypeVar, Iterable, Callable, get_type_hints
-try:
-    from typing_extensions import GenericMeta, \
-        ClassVar, Final, Protocol, NoReturn
-except ImportError:
-    from .typing_extensions import GenericMeta, \
-        ClassVar, Final, Protocol, NoReturn
+from typing import Union, Tuple, Dict, Any, TypeVar, Iterable, Callable, get_type_hints
 # try:
 #     from typing import ForwardRef, _GenericAlias, _SpecialForm
 # except ImportError:
@@ -46,9 +38,9 @@ except ImportError:
 #         except AttributeError:
 #             return Generic
 try:
-    from typeddict_shim import TypedDict, GenericTypedDict, _TypedDictMeta, get_origin
+    from typeddict_shim import _TypedDictMeta, get_origin
 except (ImportError, ModuleNotFoundError):
-    from .typeddict_shim import TypedDict, GenericTypedDict, _TypedDictMeta, get_origin
+    from .typeddict_shim import _TypedDictMeta, get_origin
 
 
 
