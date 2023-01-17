@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ts2py"
-version = "0.6.5"
+version = "0.0.1"
 description = "Python-Interoperability for Typescript-Interfaces"
 
 license = "Apache-2.0"
@@ -42,6 +42,7 @@ packages = [
 python = "^3.10"
 dhparser = "^1.3.3"
 typing-extensions = "^4.4.0"
+typer = {extras = ["all"], version = "^0.7.0"}
 
 [tool.pylint."MESSAGES CONTROL"]
 confidence = ''
