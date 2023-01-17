@@ -23,9 +23,31 @@ def source_hash(source_text: str) -> str:
     return " ".join([md5(source_text), script_hash])
 
 
-DEFAULT_IMPORTS = """
-from typing import TypedDict, GenericTypedDict, NotRequired, Literal, Union, Optional, Any, Generic, TypeVar, Callable, Coroutine, List, Tuple, Dict
-"""
+TYPING_TYPES = [
+    "NotRequired",
+    "Literal",
+    "Union",
+    "Optional",
+    "Any",
+    "Generic",
+    "TypeVar",
+    "Callable",
+    "Coroutine",
+    "List",
+    "Tuple",
+    "Dict",
+]
+
+
+def get_typing_imports(python_code: Any):
+    initial_import_line = "from typing import"
+    typing_types_to_add = ["TypedDict"]
+    for typing_type in TYPING_TYPES:
+        typing_match = re.search(rf"\b({typing_type})\b", python_code)
+        if typing_match:
+            typing_types_to_add.append(typing_type)
+    typing_types_str = ", ".join(typing_types_to_add)
+    return f"{initial_import_line} {typing_types_str}"
 
 
 def to_typename(varname: str) -> str:
@@ -152,7 +174,7 @@ class TS2PyCompiler(Compiler):
     def finalize(self, python_code: Any) -> Any:
         code_blocks = []
         if self.tree.name == "document":
-            code_blocks.append(DEFAULT_IMPORTS)
+            code_blocks.append(get_typing_imports(python_code))
         code_blocks.append(python_code)
         cooked = "\n\n".join(code_blocks)
         cooked = re.sub(" +(?=\n)", "", cooked)
