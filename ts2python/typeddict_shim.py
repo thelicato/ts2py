@@ -35,35 +35,58 @@ import sys
 from typing import Generic, Optional, Union, Any, TypeVar
 
 try:
-    from typing_extensions import GenericMeta, \
-        ClassVar, Final, Protocol, NoReturn, Literal
+    from typing_extensions import (
+        GenericMeta,
+        ClassVar,
+        Final,
+        Protocol,
+        NoReturn,
+        Literal,
+    )
 except ImportError:
-    from .typing_extensions import GenericMeta, \
-        ClassVar, Final, Protocol, NoReturn, Literal
+    from .typing_extensions import (
+        GenericMeta,
+        ClassVar,
+        Final,
+        Protocol,
+        NoReturn,
+        Literal,
+    )
 
 try:
     from typing import ForwardRef, _GenericAlias, _SpecialForm
 except ImportError:
     from typing import _ForwardRef  # Python 3.6 compatibility
+
     ForwardRef = _ForwardRef
     _GenericAlias = GenericMeta
     _SpecialForm = Any
 try:
     from typing_extensions import get_origin
 except ImportError:
+
     def get_origin(typ):
         try:
             return typ.__origin__
         except AttributeError:
             return Generic
+
+
 try:
     from typing import NotRequired
 except ImportError:
     NotRequired = Optional
-        
 
-__all__ = ['NotRequired', 'TypedDict', 'GenericTypedDict', '_TypedDictMeta',
-           'GenericMeta', 'get_origin', 'Literal']
+
+__all__ = [
+    "NotRequired",
+    "TypedDict",
+    "GenericTypedDict",
+    "_TypedDictMeta",
+    "GenericMeta",
+    "get_origin",
+    "Literal",
+]
 
 
 # The following functions have been copied from the Python
@@ -71,13 +94,14 @@ __all__ = ['NotRequired', 'TypedDict', 'GenericTypedDict', '_TypedDictMeta',
 # to support a more flexible version of TypedDict
 # see also: <https://www.python.org/dev/peps/pep-0655/>
 
+
 def _type_convert(arg, module=None):
     """For converting None to type(None), and strings to ForwardRef."""
     if arg is None:
         return type(None)
     if isinstance(arg, str):
         fwref = ForwardRef(arg)
-        if hasattr(fwref, '__forward_module__'):
+        if hasattr(fwref, "__forward_module__"):
             fwref.__forward_module__ = module
         return fwref
     return arg
@@ -97,13 +121,14 @@ def _type_check(arg, msg, is_argument=True, module=None):
         invalid_generic_forms = invalid_generic_forms + (ClassVar, Final)
 
     arg = _type_convert(arg, module=module)
-    if (isinstance(arg, _GenericAlias) and
-            arg.__origin__ in invalid_generic_forms):
+    if isinstance(arg, _GenericAlias) and arg.__origin__ in invalid_generic_forms:
         raise TypeError(f"{arg} is not valid as type argument")
     if arg in (Any, NoReturn):
         return arg
-    if (sys.version_info >= (3, 7) and isinstance(arg, _SpecialForm)) \
-            or arg in (Generic, Protocol):
+    if (sys.version_info >= (3, 7) and isinstance(arg, _SpecialForm)) or arg in (
+        Generic,
+        Protocol,
+    ):
         raise TypeError(f"Plain {arg} is not valid as type argument")
     if isinstance(arg, (type, TypeVar, ForwardRef)):
         return arg
@@ -112,25 +137,30 @@ def _type_check(arg, msg, is_argument=True, module=None):
     return arg
 
 
-def _caller(depth=1, default='__main__'):
+def _caller(depth=1, default="__main__"):
     try:
-        return sys._getframe(depth + 1).f_globals.get('__name__', default)
+        return sys._getframe(depth + 1).f_globals.get("__name__", default)
     except (AttributeError, ValueError):  # For platforms without _getframe()
         return None
 
 
 def _new_typed_dict(meta, name, bases, ns) -> dict:
     for base in bases:
-        if base is not dict and type(base) is not meta \
-                and get_origin(base) is not Generic:
-            raise TypeError('cannot inherit from both a TypedDict type '
-                            'and a non-TypedDict base class: '
-                            f'{base} does not have type {meta}; '
-                            f'origin: {get_origin(base)}')
+        if (
+            base is not dict
+            and type(base) is not meta
+            and get_origin(base) is not Generic
+        ):
+            raise TypeError(
+                "cannot inherit from both a TypedDict type "
+                "and a non-TypedDict base class: "
+                f"{base} does not have type {meta}; "
+                f"origin: {get_origin(base)}"
+            )
     tp_dict = type.__new__(meta, name, (dict,), ns)
 
     annotations = {}
-    own_annotations = ns.get('__annotations__', {})
+    own_annotations = ns.get("__annotations__", {})
     # own_annotation_keys = set(own_annotations.keys())
     msg = "TypedDict('Name', {f0: t0, f1: t1, ...}); each t must be a type"
     own_annotations = {
@@ -141,16 +171,15 @@ def _new_typed_dict(meta, name, bases, ns) -> dict:
     optional_keys = set()
 
     for base in bases:
-        annotations.update(base.__dict__.get('__annotations__', {}))
-        required_keys.update(base.__dict__.get('__required_keys__', ()))
-        optional_keys.update(base.__dict__.get('__optional_keys__', ()))
+        annotations.update(base.__dict__.get("__annotations__", {}))
+        required_keys.update(base.__dict__.get("__required_keys__", ()))
+        optional_keys.update(base.__dict__.get("__optional_keys__", ()))
 
     annotations.update(own_annotations)
 
     total = True
     for field, field_type in own_annotations.items():
-        if get_origin(field_type) is Union \
-                and type(None) in field_type.__args__:
+        if get_origin(field_type) is Union and type(None) in field_type.__args__:
             optional_keys.add(field)
             total = False
         else:
@@ -159,7 +188,7 @@ def _new_typed_dict(meta, name, bases, ns) -> dict:
     tp_dict.__annotations__ = annotations
     tp_dict.__required_keys__ = frozenset(required_keys)
     tp_dict.__optional_keys__ = frozenset(optional_keys)
-    if not hasattr(tp_dict, '__total__'):
+    if not hasattr(tp_dict, "__total__"):
         tp_dict.__total__ = total
     return tp_dict
 
@@ -179,19 +208,21 @@ class _TypedDictMeta(type):
     def __subclasscheck__(cls, other):
         # Typed dicts are only for static structural subtyping.
         if sys.version_info < (3, 7, 0):
-            return False # hack to support Python 3.6
-        raise TypeError('TypedDict does not support instance and class checks')
+            return False  # hack to support Python 3.6
+        raise TypeError("TypedDict does not support instance and class checks")
 
     __instancecheck__ = __subclasscheck__
 
 
-_is_pypy = hasattr(sys, 'pypy_version_info')
-    
-if sys.version_info >= (3,11) and not _is_pypy:
+_is_pypy = hasattr(sys, "pypy_version_info")
+
+if sys.version_info >= (3, 11) and not _is_pypy:
     from typing import TypedDict
+
     GenericTypedDict = TypedDict
 
 elif sys.version_info >= (3, 7) and not _is_pypy:
+
     def TypedDict(typename, fields=None, *, total=True, **kwargs):
         """An alternative implementation of typing.TypedDict that, instead of
         relying on the `total`-parameter, allows to treat individual fields
@@ -239,34 +270,39 @@ elif sys.version_info >= (3, 7) and not _is_pypy:
         if fields is None:
             fields = kwargs
         elif kwargs:
-            raise TypeError("TypedDict takes either a dict or keyword arguments,"
-                            " but not both")
+            raise TypeError(
+                "TypedDict takes either a dict or keyword arguments," " but not both"
+            )
 
-        ns = {'__annotations__': dict(fields)}
+        ns = {"__annotations__": dict(fields)}
         module = _caller()
         if module is not None:
             # Setting correct module is necessary to make typed dict classes pickleable.
-            ns['__module__'] = module
+            ns["__module__"] = module
 
         return _TypedDictMeta(typename, (), ns)
 
     GenericTypedDict = TypedDict
 
 else:  # Python Version 3.6
-    TypedDict = _TypedDictMeta('TypedDict', (dict,), {})
+    TypedDict = _TypedDictMeta("TypedDict", (dict,), {})
     TypedDict.__module__ = __name__
+
     class _GenericTypedDictMeta(GenericMeta):
         def __new__(cls, name, bases, ns, total=True):
             return _new_typed_dict(_GenericTypedDictMeta, name, bases, ns)
+
         __call__ = dict
+
         def __subclasscheck__(cls, other):
             return False  # hack to support Python 3.6
+
         __instancecheck__ = __subclasscheck__
 
-    GenericTypedDict = _GenericTypedDictMeta('TypedDict', (dict,), {})
+    GenericTypedDict = _GenericTypedDictMeta("TypedDict", (dict,), {})
     GenericTypedDict.__module__ = __name__
 
-_TypedDict = type.__new__(_TypedDictMeta, 'TypedDict', (), {})
+_TypedDict = type.__new__(_TypedDictMeta, "TypedDict", (), {})
 TypedDict.__mro_entries__ = lambda bases: (_TypedDict,)
 
 # up to this point all functions have been copied and adapted from

@@ -22,6 +22,7 @@ permissions and limitations under the License.
 from enum import Enum
 import functools
 from typing import Union, Tuple, Dict, Any, TypeVar, Iterable, Callable, get_type_hints
+
 # try:
 #     from typing import ForwardRef, _GenericAlias, _SpecialForm
 # except ImportError:
@@ -43,19 +44,18 @@ except (ImportError, ModuleNotFoundError):
     from .typeddict_shim import _TypedDictMeta, get_origin
 
 
-
-__all__ = ['validate_type', 'type_check', 'validate_uniform_sequence']
+__all__ = ["validate_type", "type_check", "validate_uniform_sequence"]
 
 
 def strdata(data: Any) -> str:
     datastr = str(data)
-    return datastr[:10] + '...' if len(datastr) > 10 else datastr
+    return datastr[:10] + "..." if len(datastr) > 10 else datastr
 
 
 def validate_enum(val: Any, typ: Enum):
     # if not any(member.value == val for member in typ.__members__.values()):
     #     raise ValueError(f"{val} is not contained in enum {typ}")
-    if not hasattr(typ, '__value_set__'):
+    if not hasattr(typ, "__value_set__"):
         typ.__value_set__ = {member.value for member in typ.__members__.values()}
     if val not in typ.__value_set__:
         raise ValueError(f"{val} is not contained in enum {typ}")
@@ -87,7 +87,7 @@ def validate_type(val: Any, typ):
         if not isinstance(val, Dict):
             raise TypeError(f"{val} is not even a dictionary")
         validate_TypedDict(val, typ)
-    elif hasattr(typ, '__args__'):
+    elif hasattr(typ, "__args__"):
         validate_compound_type(val, typ)
     else:
         if not isinstance(val, typ):
@@ -118,7 +118,7 @@ def validate_uniform_sequence(sequence: Iterable, item_type):
             if not isinstance(val, Dict):
                 raise TypeError(f"{val} is not of type {item_type}")
             validate_TypedDict(val, item_type)
-    elif hasattr(item_type, '__args__'):
+    elif hasattr(item_type, "__args__"):
         for val in sequence:
             validate_compound_type(val, item_type)
     else:
@@ -146,8 +146,8 @@ def validate_compound_type(value: Any, T):
     :raise: TypeError if value is not of compound type T.
             ValueError if T is not a compound type.
     """
-    if not hasattr(T, '__args__'):
-        raise ValueError(f'{T} is not a compound type.')
+    if not hasattr(T, "__args__"):
+        raise ValueError(f"{T} is not a compound type.")
     if isinstance(value, get_origin(T)):
         if isinstance(value, Dict):
             assert len(T.__args__) == 2, str(T)
@@ -213,8 +213,10 @@ def validate_TypedDict(D: Dict, T: _TypedDictMeta):
             if isinstance(value, Dict):
                 validate_TypedDict(value, field_type)
             else:
-                type_errors.append(f"Field {field}: '{strdata(D[field])}' is not of {field_type}, "
-                                   f"but of type {type(D[field])}")
+                type_errors.append(
+                    f"Field {field}: '{strdata(D[field])}' is not of {field_type}, "
+                    f"but of type {type(D[field])}"
+                )
         elif get_origin(field_type) is Union:
             value = D[field]
             for union_typ in field_type.__args__:
@@ -225,7 +227,7 @@ def validate_TypedDict(D: Dict, T: _TypedDictMeta):
                             break
                         except TypeError:
                             pass
-                elif hasattr(union_typ, '__args__'):
+                elif hasattr(union_typ, "__args__"):
                     try:
                         validate_compound_type(value, union_typ)
                         break
@@ -235,9 +237,11 @@ def validate_TypedDict(D: Dict, T: _TypedDictMeta):
                     break
             else:
                 # TODO: bugfix?
-                type_errors.append(f"Field {field}: '{strdata(D[field])}' is not of {field_type}, "
-                                   f"but of type {type(D[field])}")
-        elif hasattr(field_type, '__args__'):
+                type_errors.append(
+                    f"Field {field}: '{strdata(D[field])}' is not of {field_type}, "
+                    f"but of type {type(D[field])}"
+                )
+        elif hasattr(field_type, "__args__"):
             validate_compound_type(D[field], field_type)
         elif isinstance(field_type, TypeVar):
             pass  # for now
@@ -245,11 +249,14 @@ def validate_TypedDict(D: Dict, T: _TypedDictMeta):
             if issubclass(field_type, Enum):
                 validate_enum(D[field], field_type)
             else:
-                type_errors.append(f"Field {field}: '{strdata(D[field])}' is not a {field_type}, "
-                                   f"but a {type(D[field])}")
+                type_errors.append(
+                    f"Field {field}: '{strdata(D[field])}' is not a {field_type}, "
+                    f"but a {type(D[field])}"
+                )
     if type_errors:
-        raise TypeError(f"Type error(s) in dictionary of type {T}:\n"
-                        + '\n'.join(type_errors))
+        raise TypeError(
+            f"Type error(s) in dictionary of type {T}:\n" + "\n".join(type_errors)
+        )
 
 
 def type_check(func: Callable, check_return_type: bool = True) -> Callable:
@@ -290,12 +297,14 @@ def type_check(func: Callable, check_return_type: bool = True) -> Callable:
         at least one of the parameter's or the return value does not
         match the annotated types.
     """
-    arg_names = func.__code__.co_varnames[:func.__code__.co_argcount]
+    arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
     arg_types = get_type_hints(func)
-    return_type = arg_types.get('return', None)
-    if return_type is not None:  del arg_types['return']
-    assert arg_types or return_type, \
-        f'type_check-decorated "{func}" has no type annotations'
+    return_type = arg_types.get("return", None)
+    if return_type is not None:
+        del arg_types["return"]
+    assert (
+        arg_types or return_type
+    ), f'type_check-decorated "{func}" has no type annotations'
 
     @functools.wraps(func)
     def guard(*args, **kwargs):
@@ -307,10 +316,12 @@ def type_check(func: Callable, check_return_type: bool = True) -> Callable:
             except TypeError as e:
                 raise TypeError(
                     f'Parameter "{name}" of function "{func.__name__}" failed '
-                    f'the type-check, because:\n{str(e)}')
+                    f"the type-check, because:\n{str(e)}"
+                )
             except KeyError as e:
-                raise TypeError(f'Missing parameter {str(e)} in call of '
-                                f'"{func.__name__}"')
+                raise TypeError(
+                    f"Missing parameter {str(e)} in call of " f'"{func.__name__}"'
+                )
         ret = func(*args, **kwargs)
         if check_return_type and return_type:
             try:
@@ -318,7 +329,8 @@ def type_check(func: Callable, check_return_type: bool = True) -> Callable:
             except TypeError as e:
                 raise TypeError(
                     f'Value returned by function "{func.__name__}" failed '
-                    f'the type-check, because: {str(e)}')
+                    f"the type-check, because: {str(e)}"
+                )
         return ret
 
     return guard

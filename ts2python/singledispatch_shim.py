@@ -28,6 +28,7 @@ permissions and limitations under the License.
 
 
 from functools import _find_impl, get_cache_token, update_wrapper
+
 try:
     from types import GenericAlias
 except ImportError:
@@ -104,7 +105,7 @@ def singledispatch(func):
                     f"Invalid first argument to `register()`. "
                     f"{cls!r} is not a class."
                 )
-            ann = getattr(cls, '__annotations__', {})
+            ann = getattr(cls, "__annotations__", {})
             if not ann:
                 raise TypeError(
                     f"Invalid first argument to `register()`: {cls!r}. "
@@ -115,10 +116,11 @@ def singledispatch(func):
 
             # only import typing if annotation parsing is necessary
             from typing import get_type_hints
+
             try:
-                print('>>>', func, type(func))
+                print(">>>", func, type(func))
                 argname, cls = next(iter(get_type_hints(func).items()))
-                print('###', argname, cls)
+                print("###", argname, cls)
                 if not _is_valid_dispatch_type(cls):
                     raise TypeError(
                         f"Invalid annotation for {argname!r}. "
@@ -126,23 +128,21 @@ def singledispatch(func):
                     )
             except NameError:
                 cls = next(iter(ann.values()))
-                print('***', cls, type(cls))
-
+                print("***", cls, type(cls))
 
         registry[cls] = func
-        if cache_token is None and hasattr(cls, '__abstractmethods__'):
+        if cache_token is None and hasattr(cls, "__abstractmethods__"):
             cache_token = get_cache_token()
         dispatch_cache.clear()
         return func
 
     def wrapper(*args, **kw):
         if not args:
-            raise TypeError(f'{funcname} requires at least '
-                            '1 positional argument')
+            raise TypeError(f"{funcname} requires at least " "1 positional argument")
 
         return dispatch(args[0].__class__)(*args, **kw)
 
-    funcname = getattr(func, '__name__', 'singledispatch function')
+    funcname = getattr(func, "__name__", "singledispatch function")
     registry[object] = func
     wrapper.register = register
     wrapper.dispatch = dispatch
@@ -186,5 +186,4 @@ class singledispatchmethod:
 
     @property
     def __isabstractmethod__(self):
-        return getattr(self.func, '__isabstractmethod__', False)
-
+        return getattr(self.func, "__isabstractmethod__", False)

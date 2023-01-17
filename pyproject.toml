@@ -46,12 +46,38 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 DHParser = { version = "~1.2", optional = false }
 typing_extensions = { version = "^4.0", optional = true }
 
+[tool.pylint."MESSAGES CONTROL"]
+confidence = ''
+disable = '''
+missing-function-docstring,
+missing-module-docstring,
+missing-class-docstring
+'''
+
+[tool.black]
+line-length = 88
+target-version = ['py37', 'py38']
+include = 'ts2python/.*\.pyi?'
+extend-exclude = '''
+/(
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+  | profiling
+)/
+'''
+
 [tool.poetry.scripts]
 ts2python = 'ts2python.main:main'
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^2.15.10"
+pre-commit = "^2.21.0"
+black = "^22.12.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools", "wheel"]

@@ -17,14 +17,18 @@ permissions and limitations under the License.
 """
 
 import sys
-assert sys.version_info >= (3, 6, 0), "ts2python requires at least Python-Version 3.6!"
+
+assert sys.version_info >= (
+    3,
+    10,
+    0,
+), "ts2python requires at least Python-Version 3.10!"
 
 __title__ = "ts2python"
 __version__ = "0.5"
-__version_info__ = tuple(int(part) for part in __version__.split('.'))
+__version_info__ = tuple(int(part) for part in __version__.split("."))
 __description__ = "Python-Interoperability for Typescript-Interfaces"
 __author__ = "Eckhart Arnold"
 __email__ = "eckhart.arnold@posteo.de"
 __license__ = "http://www.apache.org/licenses/LICENSE-2.0"
 __copyright__ = "Copyright (C) Eckhart Arnold 2021"
-
