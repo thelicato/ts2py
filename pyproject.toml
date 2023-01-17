@@ -54,7 +54,7 @@ missing-class-docstring
 
 [tool.black]
 line-length = 88
-target-version = ['py37', 'py38']
+target-version = ['py310', 'py311']
 include = 'ts2py/.*\.pyi?'
 extend-exclude = '''
 /(
