@@ -1,9 +1,10 @@
-import os
+from pathlib import Path
 
-GRAMMAR_FILE = (
-    f"{os.path.dirname(os.path.abspath(__package__))}/ts2python/assets/ts2python.ebnf"
-)
-INI_FILE = f"{os.path.dirname(os.path.abspath(__package__))}/ts2python/assets/ts2pythonParser.ini"
+FILE_PATH = Path(__file__)
+MAIN_DIR = FILE_PATH.parent.parent.absolute()
+
+GRAMMAR_FILE = f"{MAIN_DIR}/assets/ts2python.ebnf"
+INI_FILE = f"{MAIN_DIR}/assets/ts2pythonParser.ini"
 
 # Colors
 SUCCESS_C = "\033[92m"
